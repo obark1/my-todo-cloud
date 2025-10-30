@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -f docker-compose.prod.yml --replicas=2
+    kompose.version: 1.37.0 (HEAD)
+  labels:
+    io.kompose.service: todo-redis
+  name: todo-redis
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: todo-redis
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -f docker-compose.prod.yml --replicas=2
+        kompose.version: 1.37.0 (HEAD)
+      labels:
+        io.kompose.service: todo-redis
+    spec:
+      containers:
+        - image: redis:5.0.3
+          name: todo-redis
+          ports:
+            - containerPort: 6379
+              protocol: TCP
+          resources:
+            limits:
+              memory: "268435456"
+      restartPolicy: Always

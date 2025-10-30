@@ -2,6 +2,7 @@ services:
   todo-rabbitmq:
     container_name: todo-rabbitmq
     image: rabbitmq:3.13-management
+    mem_limit: 200m
     ports:
       - 5672:5672
       - 8081:15672
@@ -12,6 +13,7 @@ services:
   todo-redis:
     container_name: todo-redis
     image: redis:5.0.3
+    mem_limit: 256m
     ports:
       - 6379:6379
 
@@ -21,6 +23,7 @@ services:
       context: ./todo-postgres
       dockerfile: Dockerfile
     image: todo-postgres:1.0
+    mem_limit: 512m
     ports:
       - 5432:5432
     volumes:
@@ -29,6 +32,7 @@ services:
   todo-elastic:
     container_name: todo-elastic
     image: elasticsearch:6.6.1
+    mem_limit: 512m
     ports:
       - 9200:9200
       - 9300:9300
@@ -43,6 +47,7 @@ services:
       context: todo-cache-ingestion
       dockerfile: ../Dockerfile.nodejs.dev
     image: todo-cache-ingestion:development
+    mem_limit: 128m
     command: sh /app/start.sh
     environment:
       - REDIS_HOST=${REDIS_HOST}
@@ -59,6 +64,7 @@ services:
       context: todo-cache-service
       dockerfile: ../Dockerfile.nodejs.dev
     image: todo-cache-service:development
+    mem_limit: 128m
     ports:
       - 3001:3000
     environment:
@@ -73,6 +79,7 @@ services:
       context: todo-search-ingestion
       dockerfile: ../Dockerfile.nodejs.dev
     image: todo-search-ingestion:development
+    mem_limit: 128m
     command: sh /app/start.sh
     environment:
       - ELASTICSEARCH_HOST=${ELASTICSEARCH_HOST}
@@ -88,6 +95,7 @@ services:
       context: todo-search-service
       dockerfile: ../Dockerfile.nodejs.dev
     image: todo-search-service:development
+    mem_limit: 128m
     command: sh /app/start.sh
     ports:
       - 3002:3000
@@ -103,6 +111,7 @@ services:
       context: todo-storage-ingestion
       dockerfile: ../Dockerfile.nodejs.dev
     image: todo-storage-ingestion:development
+    mem_limit: 128m
     command: sh /app/start.sh
     environment:
       - POSTGRES_HOST=${POSTGRES_HOST}
@@ -121,6 +130,7 @@ services:
       context: todo-storage-service
       dockerfile: ../Dockerfile.nodejs.dev
     image: todo-storage-service:development
+    mem_limit: 128m
     ports:
       - 3003:3000
     environment:
@@ -138,6 +148,7 @@ services:
       context: todo-api-gateway
       dockerfile: ../Dockerfile.nodejs.dev
     image: todo-api-gateway:development
+    mem_limit: 128m
     command: sh /app/start.sh
     ports:
       - 3000:3000
@@ -161,6 +172,7 @@ services:
       context: ./todo-view
       dockerfile: Dockerfile.dev
     image: todo-view:development
+    mem_limit: 768m
     ports:
       - 4200:4200
     volumes:
@@ -175,6 +187,7 @@ services:
       context: ./todo-proxy
       dockerfile: Dockerfile
     image: todo-proxy:development
+    mem_limit: 512m
     ports:
       - 8080:80
     depends_on:

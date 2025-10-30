@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -f docker-compose.prod.yml --replicas=2
+    kompose.version: 1.37.0 (HEAD)
+  labels:
+    io.kompose.service: todo-proxy
+  name: todo-proxy
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: todo-proxy
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -f docker-compose.prod.yml --replicas=2
+        kompose.version: 1.37.0 (HEAD)
+      labels:
+        io.kompose.service: todo-proxy
+    spec:
+      containers:
+        - image: obark1/todo-proxy:1.0
+          name: todo-proxy
+          ports:
+            - containerPort: 80
+              protocol: TCP
+          resources:
+            limits:
+              memory: "536870912"
+      restartPolicy: Always

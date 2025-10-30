@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -f docker-compose.prod.yml --replicas=2
+    kompose.version: 1.37.0 (HEAD)
+  labels:
+    io.kompose.service: todo-elastic
+  name: todo-elastic
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: todo-elastic
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -f docker-compose.prod.yml --replicas=2
+        kompose.version: 1.37.0 (HEAD)
+      labels:
+        io.kompose.service: todo-elastic
+    spec:
+      containers:
+        - env:
+            - name: discovery.type
+              value: single-node
+          image: elasticsearch:6.6.1
+          name: todo-elastic
+          ports:
+            - containerPort: 9200
+              protocol: TCP
+            - containerPort: 9300
+              protocol: TCP
+          resources:
+            limits:
+              memory: "536870912"
+          volumeMounts:
+            - mountPath: /usr/share/elasticsearch/data
+              name: elastic-data
+      restartPolicy: Always
+      volumes:
+        - name: elastic-data
+          persistentVolumeClaim:
+            claimName: elastic-data

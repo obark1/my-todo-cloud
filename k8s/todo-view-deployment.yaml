@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose.yml -f docker-compose.prod.yml --replicas=2
+    kompose.version: 1.37.0 (HEAD)
+  labels:
+    io.kompose.service: todo-view
+  name: todo-view
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      io.kompose.service: todo-view
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose.yml -f docker-compose.prod.yml --replicas=2
+        kompose.version: 1.37.0 (HEAD)
+      labels:
+        io.kompose.service: todo-view
+    spec:
+      containers:
+        - image: obark1/todo-view:1.0
+          name: todo-view
+          ports:
+            - containerPort: 4200
+              protocol: TCP
+            - containerPort: 8080
+              protocol: TCP
+          resources:
+            limits:
+              memory: "805306368"
+          volumeMounts:
+            - mountPath: /usr/src/app
+              name: todo-view-cm0
+            - mountPath: /usr/src/app/node_modules
+              name: todo-view-claim1
+      restartPolicy: Always
+      volumes:
+        - configMap:
+            name: todo-view-cm0
+          name: todo-view-cm0
+        - name: todo-view-claim1
+          persistentVolumeClaim:
+            claimName: todo-view-claim1
